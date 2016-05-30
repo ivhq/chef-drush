@@ -16,24 +16,22 @@
 # limitations under the License.
 #
 
-require_recipe "git"
+include_recipe 'git'
+include_recipe 'composer'
 
 case node[:platform]
-when "debian", "ubuntu", "centos", "redhat"
+when 'debian', 'ubuntu', 'centos', 'redhat'
   git node['drush']['install_dir'] do
-    repository "https://github.com/drush-ops/drush.git"
+    repository 'https://github.com/drush-ops/drush.git'
     reference node['drush']['version']
     notifies :run, 'execute[install-drush-deps]', :immediately
     action :sync
   end
 
-  link "/usr/bin/drush" do
+  link '/usr/bin/drush' do
     to ::File.join(node['drush']['install_dir'], 'drush')
   end
 end
-
-# We have to run composer against the directory if we using 6.x or above
-require_recipe "composer"
 
 execute 'install-drush-deps' do
   command "#{node['composer']['bin']} install --no-interaction --no-ansi --quiet --no-dev"
