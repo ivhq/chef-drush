@@ -28,7 +28,7 @@ when "debian", "ubuntu", "centos", "redhat"
   end
 
   link "/usr/bin/drush" do
-    to "#{node['drush']['install_dir']}/drush"
+    to ::File.join(node['drush']['install_dir'], 'drush')
   end
 end
 
@@ -37,9 +37,7 @@ require_recipe "composer"
 
 execute 'install-drush-deps' do
   command "#{node['composer']['bin']} install --no-interaction --no-ansi --quiet --no-dev"
-  cwd     node['drush']['install_dir']
-  user    'root'
-  group   'root'
-  only_if { File.exists?(node['composer']['bin']) && File.exists?(node['drush']['install_dir'] + '/composer.json') }
-  action  :nothing
+  cwd node['drush']['install_dir']
+  only_if { ::File.exist?(node['composer']['bin']) && ::File.exist?(::File.join(node['drush']['install_dir'], 'composer.json')) }
+  action :nothing
 end
